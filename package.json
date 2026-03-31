@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.ts",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/patrebna/api/issues"
   },
@@ -36,6 +36,7 @@
     "axios": "^1.13.2",
     "axios-retry": "^4.5.0",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "ioredis": "^5.10.1"
   }
 }
