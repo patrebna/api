@@ -5,9 +5,10 @@ import { readFileSync } from 'fs';
 class RedisService {
   private readonly redis: Redis;
   constructor() {
+    const host = process.env.REDIS_HOST ?? 'redis';
     const password = process.env.REDIS_PASSWORD ?? '';
     this.redis = new Redis({
-      host: 'redis',
+      host,
       port: 6379,
       password,
       tls: {
