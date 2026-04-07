@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "index.ts",
   "scripts": {
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/patrebna/api#readme",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.0",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
@@ -35,6 +36,7 @@
   "dependencies": {
     "axios": "^1.13.2",
     "axios-retry": "^4.5.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "ioredis": "^5.10.1",
