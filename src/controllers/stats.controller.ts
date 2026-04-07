@@ -1,7 +1,7 @@
 import db from 'services/mongodb.service';
-import { type Response } from 'express';
+import { type Request, type Response } from 'express';
 
-export async function getStatsHandler(res: Response): Promise<void> {
+export async function getStatsHandler(req: Request, res: Response): Promise<void> {
   try {
     const database = db.getDb();
 
@@ -10,14 +10,9 @@ export async function getStatsHandler(res: Response): Promise<void> {
       database.collection('kufarads').countDocuments(),
     ]);
 
-    res.status(200).json({
-      usersCount,
-      adsCount,
-    });
+    res.status(200).json({ usersCount, adsCount });
   } catch (error) {
     console.error('Ошибкa при получении статистики:', error);
-    res.status(500).json({
-      message: 'Внутренняя ошибка сервера',
-    });
+    res.status(500).json({ message: 'Внутренняя ошибка сервера' });
   }
 }
