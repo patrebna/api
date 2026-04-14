@@ -60,3 +60,33 @@ export interface IExtendedAd extends IAd {
   coordinates?: number[];
   parameters: ParameterMap;
 }
+
+export interface IAdDetails {
+  id: string;
+  title: string;
+  price: string;
+  category: string;
+  postedAt: string;
+  location: string;
+  seller: {
+    name: string;
+    isCompany: boolean;
+    avatar?: string;
+    overallScore: number;
+    receivedCount: number;
+  };
+  images: string[];
+  characteristics: { label: string; value: string }[];
+  description: string;
+  similarAds: ISimilarAd[];
+  partnerAds: ISimilarAd[];
+  kufarUrl: string;
+}
+
+export interface ISimilarAd {
+  url: string;
+  image?: string;
+  title: string;
+  price: string;
+  postedAt: string;
+}

@@ -1,5 +1,6 @@
 import { type RawAd, type IExtendedAd, AdParameters } from 'types';
 import { getParametersOfAd } from 'lib/helpers/getParametersOfAd';
+import { formatPrice } from './formatPrice';
 
 export function transformRawAds(rawAds: RawAd[]): IExtendedAd[] {
   const allImages: string[][] = rawAds.map(({ images }) => {
@@ -10,13 +11,6 @@ export function transformRawAds(rawAds: RawAd[]): IExtendedAd[] {
       .map(({ path, media_storage }) => `https://${media_storage}.kufar.by/v1/list_thumbs_2x/${path}`);
   });
 
-  const formatPrice = (value: string): string => {
-    const num = +value / 100;
-    return new Intl.NumberFormat('ru-RU', {
-      minimumFractionDigits: num < 1 ? 1 : 0,
-      maximumFractionDigits: num < 1 ? 2 : 0,
-    }).format(num);
-  };
   const extendedAds: IExtendedAd[] = rawAds.map(
     ({ account_id, ad_id, subject, ad_link, price_byn, price_usd, ad_parameters, account_parameters }, index) => ({
       saller_id: account_id,
