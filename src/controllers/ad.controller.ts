@@ -59,6 +59,7 @@ export async function getAdDetails(req: Request, res: Response): Promise<void> {
         'area',
         'deliveryEnabled',
         'safedealEnabled',
+        'multiregionRegions',
       ]),
       description: adData?.description,
       kufarUrl: url,
