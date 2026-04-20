@@ -7,8 +7,8 @@ import { getAdDetails } from 'controllers/ad.controller';
 
 const router = Router();
 
-router.get('/:adId/description', getAdDescription);
-router.get('/:adId/details', getAdDetails);
+router.get('/ad/:adId/description', getAdDescription);
+router.get('/ad/:adId/details', getAdDetails);
 router.get('/ads', parseAdsHandler);
 router.get('/stats', getStatsHandler);
 router.post('/bepaid', bepaidHandler);

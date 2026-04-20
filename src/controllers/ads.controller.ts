@@ -18,19 +18,18 @@ axiosRetry(axios, {
 
 export async function parseAdsHandler(req: Request, res: Response): Promise<void> {
   try {
-    const url = decodeURIComponent(req.query.url as string);
+    const rawUrl = req.query.url as string;
 
-    if (!url) {
+    if (!rawUrl) {
       res.status(400).json({ error: 'Отсутствует параметр URL' });
       return;
     }
-
+    const url = decodeURIComponent(rawUrl);
     const { data } = await axios.get<string>(url);
-
     const ads: RawAd[] | null = extractNextDataField(data, 'props.initialState.listing.ads');
 
-    if (!ads) {
-      res.status(204).send();
+    if (!ads || !ads.length) {
+      res.status(404).json({ error: 'Объявления не найдены' });
       return;
     }
 
