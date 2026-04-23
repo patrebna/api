@@ -35,6 +35,10 @@ export async function getAdDetails(req: Request, res: Response): Promise<void> {
     const sellerProfile = extractNextDataField(data, 'props.initialState.sellerBlock.data');
     const similarAds = mapAds(data, 'props.initialState.similarAds.ads');
     const partnerAds = mapAds(data, 'props.initialState.partnerAds.ads');
+
+    const images: string[] =
+      adData?.images?.gallery?.map((url: string) => url.replace('/gallery/', '/list_thumbs_2x/')) ?? [];
+
     const ad: IAdDetails = {
       id: adData?.id,
       title: adData.title,
@@ -49,7 +53,7 @@ export async function getAdDetails(req: Request, res: Response): Promise<void> {
         receivedCount: sellerProfile?.feedback?.receivedCount,
         overallScore: sellerProfile?.feedback?.overallScore,
       },
-      images: adData?.images.gallery ?? [],
+      images,
       characteristics: extractCharacteristics(adData?.adParams, [
         'category',
         'remunerationType',
