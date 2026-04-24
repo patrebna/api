@@ -61,6 +61,7 @@ export async function fetchAdDetails(adId: string): Promise<IAdDetails | null> {
       'safedealEnabled',
       'multiregionRegions',
       'addressTagsYandex',
+      'bookingCalendar',
     ]),
     description: adData?.description,
     kufarUrl: url,
