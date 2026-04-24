@@ -26,6 +26,7 @@ export async function fetchAdDetails(adId: string): Promise<IAdDetails | null> {
   if (!adData?.id) {
     return null;
   }
+  console.log(adData.adParams);
 
   const sellerProfile = extractNextDataField(data, 'props.initialState.sellerBlock.data');
   const similarAds = mapAds(data, 'props.initialState.similarAds.ads');
@@ -59,6 +60,7 @@ export async function fetchAdDetails(adId: string): Promise<IAdDetails | null> {
       'deliveryEnabled',
       'safedealEnabled',
       'multiregionRegions',
+      'addressTagsYandex',
     ]),
     description: adData?.description,
     kufarUrl: url,
