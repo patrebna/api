@@ -1,22 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs/promises';
-import path from 'path';
+import axios from 'axios';
 import apiRouter from 'routes/api.routes';
 import { fetchAdDetails } from 'controllers/ad.controller';
 import db from 'services/mongodb.service';
 
 const { PORT = 3000 } = process.env;
 const siteUrl = 'https://patrebna.by';
-const landingSourceDir = path.resolve(__dirname, '../../landing');
-const landingDistDir = path.join(landingSourceDir, 'dist');
-const landingDevOrigin = 'http://localhost:5173';
+const landingInternalOrigin = process.env.LANDING_INTERNAL_ORIGIN ?? 'http://landing';
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static(landingDistDir, { index: false }));
 app.use('/api', apiRouter);
 
 function escapeHtml(value: string): string {
@@ -99,23 +95,12 @@ function injectAdPageMeta(template: string, ad: Awaited<ReturnType<typeof fetchA
 }
 
 async function loadLandingTemplate(): Promise<string> {
-  const distIndexPath = path.join(landingDistDir, 'index.html');
+  const { data } = await axios.get<string>(`${landingInternalOrigin}/index.html`, {
+    timeout: 5000,
+    responseType: 'text',
+  });
 
-  try {
-    await fs.access(distIndexPath);
-    return await fs.readFile(distIndexPath, 'utf-8');
-  } catch {
-    const sourceIndexPath = path.join(landingSourceDir, 'index.html');
-    const sourceTemplate = await fs.readFile(sourceIndexPath, 'utf-8');
-
-    return sourceTemplate.replace(
-      /<script type="module" src="\/src\/main\.tsx"><\/script>/,
-      [
-        `<script type="module" src="${landingDevOrigin}/@vite/client"></script>`,
-        `<script type="module" src="${landingDevOrigin}/src/main.tsx"></script>`,
-      ].join('\n    '),
-    );
-  }
+  return data;
 }
 
 async function renderAdPage(req: express.Request, res: express.Response): Promise<void> {
