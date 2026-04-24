@@ -18,6 +18,55 @@ axiosRetry(axios, {
   },
 });
 
+export async function fetchAdDetails(adId: string): Promise<IAdDetails | null> {
+  const url = `https://www.kufar.by/item/${adId}`;
+  const { data } = await axios.get<string>(url);
+  const adData = extractNextDataField(data, 'props.initialState.adView.data');
+
+  if (!adData?.id) {
+    return null;
+  }
+
+  const sellerProfile = extractNextDataField(data, 'props.initialState.sellerBlock.data');
+  const similarAds = mapAds(data, 'props.initialState.similarAds.ads');
+  const partnerAds = mapAds(data, 'props.initialState.partnerAds.ads');
+
+  const images: string[] =
+    adData?.images?.gallery?.map((imageUrl: string) => imageUrl.replace('/gallery/', '/list_thumbs_2x/')) ?? [];
+
+  return {
+    id: adData?.id,
+    title: adData.title,
+    price: stripCurrencyFromPrice(adData?.price),
+    category: adData?.category,
+    postedAt: adData?.date,
+    location: adData?.region,
+    seller: {
+      name: sellerProfile?.name,
+      avatar: sellerProfile?.profileImgUrl,
+      isCompany: sellerProfile?.isCompanyAd,
+      receivedCount: sellerProfile?.feedback?.receivedCount,
+      overallScore: sellerProfile?.feedback?.overallScore,
+    },
+    images,
+    characteristics: extractCharacteristics(adData?.adParams, [
+      'category',
+      'remunerationType',
+      'carsFeatures',
+      'region',
+      'coordinates',
+      'area',
+      'deliveryEnabled',
+      'safedealEnabled',
+      'multiregionRegions',
+    ]),
+    description: adData?.description,
+    kufarUrl: url,
+    similarAds,
+    partnerAds,
+  };
+}
+
 export async function getAdDetails(req: Request, res: Response): Promise<void> {
   try {
     const adId = req.params.adId as string;
@@ -25,51 +74,13 @@ export async function getAdDetails(req: Request, res: Response): Promise<void> {
       res.status(400).json({ error: 'Отсутствует параметр adId' });
       return;
     }
-    const url = `https://www.kufar.by/item/${adId}`;
-    const { data } = await axios.get<string>(url);
-    const adData = extractNextDataField(data, 'props.initialState.adView.data');
-    if (!adData?.id) {
+    const ad = await fetchAdDetails(adId);
+
+    if (!ad) {
       res.status(404).json({ error: 'Объявление не найдено' });
       return;
     }
-    const sellerProfile = extractNextDataField(data, 'props.initialState.sellerBlock.data');
-    const similarAds = mapAds(data, 'props.initialState.similarAds.ads');
-    const partnerAds = mapAds(data, 'props.initialState.partnerAds.ads');
 
-    const images: string[] =
-      adData?.images?.gallery?.map((url: string) => url.replace('/gallery/', '/list_thumbs_2x/')) ?? [];
-
-    const ad: IAdDetails = {
-      id: adData?.id,
-      title: adData.title,
-      price: stripCurrencyFromPrice(adData?.price),
-      category: adData?.category,
-      postedAt: adData?.date,
-      location: adData?.region,
-      seller: {
-        name: sellerProfile?.name,
-        avatar: sellerProfile?.profileImgUrl,
-        isCompany: sellerProfile?.isCompanyAd,
-        receivedCount: sellerProfile?.feedback?.receivedCount,
-        overallScore: sellerProfile?.feedback?.overallScore,
-      },
-      images,
-      characteristics: extractCharacteristics(adData?.adParams, [
-        'category',
-        'remunerationType',
-        'carsFeatures',
-        'region',
-        'coordinates',
-        'area',
-        'deliveryEnabled',
-        'safedealEnabled',
-        'multiregionRegions',
-      ]),
-      description: adData?.description,
-      kufarUrl: url,
-      similarAds,
-      partnerAds,
-    };
     res.json(ad);
   } catch (error) {
     if (error instanceof AxiosError) {

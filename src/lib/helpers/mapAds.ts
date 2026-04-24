@@ -11,6 +11,7 @@ export function mapAds(data: string, path: string): ISimilarAd[] {
       title: ad?.subject,
       price: ad?.price_byn,
       postedAt: ad?.list_time,
+      remunerationType: ad?.remuneration_type,
     }))
     .slice(0, 8);
 }
