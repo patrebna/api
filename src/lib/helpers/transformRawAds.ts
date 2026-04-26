@@ -2,6 +2,12 @@ import { type RawAd, type IExtendedAd, AdParameters } from 'types';
 import { getParametersOfAd } from 'lib/helpers/getParametersOfAd';
 import { formatPrice } from './formatPrice';
 
+const currencySymbols: Record<string, string> = {
+  BYR: 'р.',
+  USD: '$',
+  EUR: '€',
+};
+
 export function transformRawAds(rawAds: RawAd[]): IExtendedAd[] {
   const allImages: string[][] = rawAds.map(({ images }) => {
     if (!images.length) return [];
@@ -12,13 +18,17 @@ export function transformRawAds(rawAds: RawAd[]): IExtendedAd[] {
   });
 
   const extendedAds: IExtendedAd[] = rawAds.map(
-    ({ account_id, ad_id, subject, ad_link, price_byn, price_usd, ad_parameters, account_parameters }, index) => ({
+    (
+      { account_id, ad_id, subject, ad_link, currency, price_byn, price_usd, ad_parameters, account_parameters },
+      index,
+    ) => ({
       saller_id: account_id,
       saller_name: getParametersOfAd(account_parameters, AdParameters.NAME)?.name.trim(),
       id: String(ad_id),
       title: subject.trim() ?? 'Без названия',
       url: ad_link,
       img_url: allImages[index][0] ?? 'https://i.ibb.co/NLkvZYG/no-photo.webp',
+      currency: currencySymbols[currency],
       price:
         price_byn !== '0' && price_usd !== '0'
           ? `${formatPrice(price_byn)}р. / ${formatPrice(price_usd)}$`

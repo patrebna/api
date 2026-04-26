@@ -15,7 +15,7 @@ export interface RawAd {
   ad_id: number;
   subject: string;
   ad_link: string;
-  body_short: string | null;
+  currency: string;
   price_byn: string;
   price_usd: string;
   images: RawImage[];
