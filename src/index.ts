@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
+import { AxiosError } from 'axios';
 import apiRouter from 'routes/api.routes';
 import { fetchAdDetails } from 'controllers/ad.controller';
 import db from 'services/mongodb.service';
@@ -11,7 +13,12 @@ const landingInternalOrigin = process.env.LANDING_INTERNAL_ORIGIN ?? 'http://lan
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 
 app.use('/api', apiRouter);
 
@@ -94,6 +101,10 @@ function injectAdPageMeta(template: string, ad: Awaited<ReturnType<typeof fetchA
   return htmlWithMeta.replace('</body>', `  ${initialDataScript}\n  </body>`);
 }
 
+function isMissingAdError(error: unknown): boolean {
+  return error instanceof AxiosError && error.response?.status === 404;
+}
+
 async function loadLandingTemplate(): Promise<string> {
   const { data } = await axios.get<string>(`${landingInternalOrigin}/index.html`, {
     timeout: 5000,
@@ -112,15 +123,19 @@ async function renderAdPage(req: express.Request, res: express.Response): Promis
       return;
     }
 
-    const [template, ad] = await Promise.all([loadLandingTemplate(), fetchAdDetails(adId)]);
+    const template = await loadLandingTemplate();
+    let ad: Awaited<ReturnType<typeof fetchAdDetails>> = null;
 
-    if (!ad) {
-      res.status(404).send('Объявление не найдено');
-      return;
+    try {
+      ad = await fetchAdDetails(adId);
+    } catch (error) {
+      if (!isMissingAdError(error)) {
+        throw error;
+      }
     }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(injectAdPageMeta(template, ad, adId));
+    res.status(ad ? 200 : 404).send(injectAdPageMeta(template, ad, adId));
   } catch (error) {
     console.error('Не удалось отрендерить страницу объявления', error);
     res.status(500).send('Не удалось отрендерить страницу объявления');
