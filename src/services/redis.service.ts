@@ -29,8 +29,32 @@ class RedisService {
   getClient(): Redis {
     return this.redis;
   }
+
   async sendNotificationToBot(key: string, data: string): Promise<void> {
     await this.redis.rpush(key, data);
+  }
+
+  async setCache(key: string, value: unknown, ttl?: number): Promise<void> {
+    const payload = JSON.stringify(value);
+
+    if (typeof ttl === 'number' && ttl > 0) {
+      await this.redis.set(key, payload, 'EX', ttl);
+      return;
+    }
+
+    await this.redis.set(key, payload);
+  }
+
+  async getCache(key: string): Promise<string | null> {
+    return await this.redis.get(key);
+  }
+
+  async getTTL(key: string): Promise<number> {
+    return await this.redis.ttl(key);
+  }
+
+  async removeCache(key: string): Promise<number> {
+    return await this.redis.del(key);
   }
 }
 
