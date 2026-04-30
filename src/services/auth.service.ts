@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import cache from 'services/redis.service';
+import { type AuthSession, type TelegramAuthPayload, type TelegramUser } from 'types';
 
 const {
   AUTH_COOKIE_DOMAIN = '',
@@ -9,30 +10,6 @@ const {
 const TELEGRAM_AUTH_MAX_AGE_SECONDS = 15 * 60;
 const SESSION_COOKIE_NAME = 'patrebna_session';
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-
-export type TelegramUser = {
-  id: number;
-  firstName: string;
-  lastName?: string;
-  username?: string;
-  photoUrl?: string;
-  authDate: string;
-};
-
-export type AuthSession = {
-  telegramUser: TelegramUser;
-  profile: null;
-};
-
-export type TelegramAuthPayload = {
-  id: number | string;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number | string;
-  hash: string;
-};
 
 function parseCookies(cookieHeader?: string) {
   if (!cookieHeader) {

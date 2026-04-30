@@ -1,13 +1,5 @@
 import cache from 'services/redis.service';
-
-type CachedUserUrl = {
-  url: string;
-  isActive: boolean;
-};
-
-type CachedUserData = {
-  urls?: CachedUserUrl[];
-};
+import { type CachedUserData } from 'types';
 
 export async function updateUserTrackedUrlStatusCache(
   userId: number,

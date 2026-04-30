@@ -1,5 +1,38 @@
 export type ParamValue = string | number | boolean | Array<string | number | boolean> | [number, number];
 
+export type TelegramUser = {
+  id: number;
+  firstName: string;
+  lastName?: string;
+  username?: string;
+  photoUrl?: string;
+  authDate: string;
+};
+
+export type AuthSession = {
+  telegramUser: TelegramUser;
+  profile: null;
+};
+
+export type TelegramAuthPayload = {
+  id: number | string;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number | string;
+  hash: string;
+};
+
+export type CachedUserUrl = {
+  url: string;
+  isActive: boolean;
+};
+
+export type CachedUserData = {
+  urls?: CachedUserUrl[];
+};
+
 export interface RawParam {
   vl: ParamValue;
   p: string;

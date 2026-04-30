@@ -1,5 +1,6 @@
 import { type Request, type Response } from 'express';
 import { updateUserTrackedUrlStatusCache } from 'lib/helpers/updateUserTrackedUrlStatusCache';
+import { type TelegramAuthPayload } from 'types';
 import db from 'services/mongodb.service';
 import {
   clearSessionCookie,
@@ -9,7 +10,6 @@ import {
   removeSession,
   readSession,
   verifyTelegramAuth,
-  type TelegramAuthPayload,
 } from 'services/auth.service';
 
 function isSecureRequest(req: Request) {
