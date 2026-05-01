@@ -11,7 +11,6 @@ export type TelegramUser = {
 
 export type AuthSession = {
   telegramUser: TelegramUser;
-  profile: null;
 };
 
 export type TelegramAuthPayload = {

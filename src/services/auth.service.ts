@@ -141,7 +141,6 @@ export async function verifyTelegramAuth(payload: TelegramAuthPayload) {
 
   return {
     telegramUser,
-    profile: null,
   } satisfies AuthSession;
 }
 
